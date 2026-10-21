@@ -788,22 +788,23 @@
       const pType = currentSubstanceObj.particleType;
 
       /* -----------------------------------------------------------------------
-         0.01 mol単位で1個ずつ原子/イオンを精密に増やすロジック
+         0.01 mol単位で1個ずつ原子/イオンを精密に増やすロジック (NaCl交互配置修正)
          ----------------------------------------------------------------------- */
       if (pType === 'ion_crystal') {
-        // 0.01 mol = 1組 (Na+ 1個, Cl- 1個)
         const pairCount = Math.max(1, Math.round(currentMolVal * 100));
         const spacing = 28;
-        const cols = Math.ceil(Math.sqrt(pairCount * 2));
-        const startX = (w - (cols - 1) * spacing) / 2;
-        const startY = (h - (Math.ceil((pairCount * 2) / cols) - 1) * spacing) / 2;
-
         const totalAtomsToDraw = pairCount * 2;
+        
+        const cols = Math.ceil(Math.sqrt(totalAtomsToDraw));
+        const startX = (w - (cols - 1) * spacing) / 2;
+        const startY = (h - (Math.ceil(totalAtomsToDraw / cols) - 1) * spacing) / 2;
 
         for (let idx = 0; idx < totalAtomsToDraw; idx++) {
           const r = Math.floor(idx / cols);
           const c = idx % cols;
-          const isNa = idx % 2 === 0;
+
+          // 行(r)と列(c)の和で判定することで縦横交互に配置
+          const isNa = (r + c) % 2 === 0;
 
           const jitterX = Math.sin(animTime * 3 + r * 1.5 + c) * 1.2;
           const jitterY = Math.cos(animTime * 3 + r - c * 1.5) * 1.2;
@@ -1143,7 +1144,7 @@
 
 
     /* =========================================================================
-       6. PAGE 3: QUIZ & PRACTICE SYSTEM (修正済)
+       6. PAGE 3: QUIZ & PRACTICE SYSTEM
        ========================================================================= */
     const QUIZ_TEMPLATES = [
       {
